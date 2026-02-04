@@ -23,9 +23,6 @@ WORKOUTS_YAML = "workouts.yaml"
 DAY_ORDER = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
 
 # -----------------------------
-# Styling (Classy, Light, Subtle)
-# -----------------------------
-# -----------------------------
 # Styling (Apple Health 2026 - Premium Light)
 # -----------------------------
 CUSTOM_CSS = """
@@ -197,40 +194,6 @@ button[kind="secondary"] {
 </style>
 """
 st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
-
-# ... (Previous Helper/DB code remains unchanged) ...
-
-# ... (Previous Tabs/Home code remains unchanged) ...
-
-# -----------------------------
-# PROGRESS TAB (With Fixed Plotly Colors)
-# -----------------------------
-with tab_progress:
-    st.markdown('<div class="section-title">Analytics</div>', unsafe_allow_html=True)
-    conn = connect_db()
-    logs = fetch_logs(conn)
-    metrics = fetch_metrics(conn)
-    conn.close()
-    
-    if not logs.empty:
-        logs["log_date"] = pd.to_datetime(logs["log_date"]).dt.date
-        daily = logs[logs["skipped"]==0].groupby("log_date").size().reset_index(name="count")
-        
-        # FIXED PLOTLY CHART AESTHETICS
-        fig = px.bar(daily, x="log_date", y="count", title="Exercises Completed")
-        fig.update_layout(
-            font_family="Inter",
-            font_color="#000000",
-            title_font_size=20,
-            plot_bgcolor="rgba(0,0,0,0)",
-            paper_bgcolor="rgba(0,0,0,0)",
-            xaxis=dict(showgrid=False, color="#000000"),
-            yaxis=dict(showgrid=True, gridcolor="#E5E5EA", color="#000000")
-        )
-        fig.update_traces(marker_color="#007AFF") # iOS Blue
-        st.plotly_chart(fig, use_container_width=True)
-    else:
-        st.info("Log some workouts to see data.")
 
 # -----------------------------
 # Helpers
@@ -514,8 +477,19 @@ with tab_progress:
     if not logs.empty:
         logs["log_date"] = pd.to_datetime(logs["log_date"]).dt.date
         daily = logs[logs["skipped"]==0].groupby("log_date").size().reset_index(name="count")
-        fig = px.bar(daily, x="log_date", y="count", title="Exercises Completed per Day")
-        fig.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)")
+        
+        # FIXED PLOTLY CHART AESTHETICS
+        fig = px.bar(daily, x="log_date", y="count", title="Exercises Completed")
+        fig.update_layout(
+            font_family="Inter",
+            font_color="#000000",
+            title_font_size=20,
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)",
+            xaxis=dict(showgrid=False, color="#000000"),
+            yaxis=dict(showgrid=True, gridcolor="#E5E5EA", color="#000000")
+        )
+        fig.update_traces(marker_color="#007AFF") # iOS Blue
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.info("Log some workouts to see data.")
