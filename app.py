@@ -189,8 +189,9 @@ button[kind="secondary"] {
 }
 .stTabs [aria-selected="true"] {
     background-color: #000;
-    color: #fff !important;
+    color: #FFFFFF !important; /* Explicit White text on Black pill */
 }
+
 </style>
 """
 st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
@@ -516,6 +517,9 @@ with tab_plan:
 # -----------------------------
 # PROGRESS TAB
 # -----------------------------
+# -----------------------------
+# PROGRESS TAB (Enterprise Analytics)
+# -----------------------------
 with tab_progress:
     st.markdown('<div class="section-title">Analytics</div>', unsafe_allow_html=True)
     conn = connect_db()
@@ -524,24 +528,65 @@ with tab_progress:
     conn.close()
     
     if not logs.empty:
-        logs["log_date"] = pd.to_datetime(logs["log_date"]).dt.date
-        daily = logs[logs["skipped"]==0].groupby("log_date").size().reset_index(name="count")
+        # Data Prep
+        logs["log_date"] = pd.to_datetime(logs["log_date"])
+        logs["fmt_date"] = logs["log_date"].dt.strftime("%d-%b") # "04-Feb"
         
-        # FIXED PLOTLY CHART AESTHETICS
-        fig = px.bar(daily, x="log_date", y="count", title="Exercises Completed")
+        # Aggregation
+        daily = logs[logs["skipped"]==0].groupby("fmt_date", sort=False).size().reset_index(name="count")
+        
+        # Enterprise Grade Chart
+        fig = px.bar(daily, x="fmt_date", y="count", 
+                     title="<b>Workout Consistency</b>",
+                     text="count")
+        
+        fig.update_traces(
+            marker_color="#000000", # Minimalist Black
+            marker_line_width=0,
+            opacity=0.9,
+            textposition='auto',
+            hovertemplate='<b>%{x}</b><br>Workouts: %{y}<extra></extra>'
+        )
+        
         fig.update_layout(
             font_family="Inter",
             font_color="#000000",
-            title_font_size=20,
+            title_font_size=18,
+            title_x=0, # Left align title like enterprise dashboards
+            margin=dict(l=0, r=20, t=40, b=10),
             plot_bgcolor="rgba(0,0,0,0)",
             paper_bgcolor="rgba(0,0,0,0)",
-            xaxis=dict(showgrid=False, color="#000000"),
-            yaxis=dict(showgrid=True, gridcolor="#E5E5EA", color="#000000")
+            height=250,
+            bargap=0.3,
+            xaxis=dict(
+                title=None,
+                showgrid=False,
+                linecolor="#E5E5EA",
+                tickfont=dict(size=12, color="#8E8E93"),
+                tickangle=0 # Keep labels horizontal if possible
+            ),
+            yaxis=dict(
+                title=None,
+                showgrid=True,
+                gridcolor="#F2F2F7", # Very subtle grid
+                showticklabels=False, # Clean look, since we have value labels on bars
+                zeroline=False
+            )
         )
-        fig.update_traces(marker_color="#007AFF") # iOS Blue
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+        
+        # Enterprise Stats Row
+        c1, c2, c3 = st.columns(3)
+        total_workouts = len(daily)
+        total_exercises = len(logs[logs["skipped"]==0])
+        consistency = f"{int((len(daily)/30)*100)}%" if len(daily) > 0 else "0%"
+        
+        with c1: st.metric("Active Days (30d)", total_workouts)
+        with c2: st.metric("Total Exercises", total_exercises)
+        with c3: st.metric("Consistency", consistency)
+
     else:
-        st.info("Log some workouts to see data.")
+        st.info("Log some workouts to see analytics.")
 
     st.markdown("### Export Data")
     if st.button("Generate Backup JSON"):
