@@ -12,7 +12,7 @@ import os
 # -----------------------------
 st.set_page_config(
     page_title="Dheeraj's Fitness Tracker",
-    page_icon="💪",
+    page_icon="icon.png",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
