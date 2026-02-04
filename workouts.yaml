@@ -1,0 +1,139 @@
+app:
+  name: "Dheeraj's Fitness Tracker"
+  phase: "Phase 1: Rebuild & Shape"
+  notes:
+    - "Focus on slow eccentrics (3s down) for all compound lifts."
+    - "Hydrate: 3L water minimum daily."
+    - "Sleep is the anabolic primer. Get 7.5 hours."
+
+schedule:
+  Monday:
+    focus: "Push (Chest, Shoulders, Triceps)"
+    intensity: "High"
+    core: "Hollow Body Holds (3x45s)"
+    exercises:
+      - name: "Incline Dumbbell Press"
+        sets: 4
+        reps: "8-10"
+        tempo: "3010"
+        notes: "Control the bottom stretch."
+      - name: "Flat Machine Press"
+        sets: 3
+        reps: "10-12"
+        tempo: "2010"
+      - name: "Lateral Raises (Cable/DB)"
+        sets: 4
+        reps: "12-15"
+        tempo: "2011"
+        notes: "Lead with elbows."
+      - name: "Tricep Rope Pushdowns"
+        sets: 3
+        reps: "12-15"
+        tempo: "2011"
+
+  Tuesday:
+    focus: "Pull (Back, Rear Delts, Biceps)"
+    intensity: "High"
+    core: "Hanging Leg Raises (3x12)"
+    exercises:
+      - name: "Lat Pulldowns (Wide Grip)"
+        sets: 4
+        reps: "10-12"
+        tempo: "3011"
+      - name: "Seated Cable Row"
+        sets: 3
+        reps: "10-12"
+        tempo: "2011"
+        notes: "Squeeze shoulder blades."
+      - name: "Face Pulls"
+        sets: 4
+        reps: "15-20"
+        tempo: "2012"
+        notes: "External rotation focus."
+      - name: "Dumbbell Hammer Curls"
+        sets: 3
+        reps: "10-12"
+        tempo: "2010"
+
+  Wednesday:
+    focus: "Active Recovery / Cardio / Abs"
+    intensity: "Low-Moderate"
+    core: "Plank Circuit (5 mins)"
+    exercises:
+      - name: "Light Cycling / Walk"
+        sets: 1
+        reps: "30-45 mins"
+        tempo: "Steady"
+        notes: "Zone 2 HR (120-135 bpm)."
+      - name: "Foam Rolling & Stretching"
+        sets: 1
+        reps: "20 mins"
+        tempo: "Slow"
+        notes: "Focus on thoracic spine and hips."
+
+  Thursday:
+    focus: "Legs (Quads & Calves focus)"
+    intensity: "High"
+    core: "Cable Woodchops (3x12/side)"
+    exercises:
+      - name: "Leg Press"
+        sets: 4
+        reps: "10-12"
+        tempo: "3010"
+        notes: "Do not lock knees."
+      - name: "Romanian Deadlifts (DB/Bar)"
+        sets: 3
+        reps: "8-10"
+        tempo: "3010"
+        notes: "Hinge at hips, keep back flat."
+      - name: "Leg Extensions"
+        sets: 3
+        reps: "12-15"
+        tempo: "2011"
+      - name: "Calf Raises (Seated/Standing)"
+        sets: 4
+        reps: "15-20"
+        tempo: "2110"
+
+  Friday:
+    focus: "Upper Body Volume (Mix)"
+    intensity: "Moderate-High"
+    core: "Ab Rollouts (3x10)"
+    exercises:
+      - name: "Dumbbell Shoulder Press"
+        sets: 3
+        reps: "10-12"
+        tempo: "2010"
+      - name: "Pull-Ups / Assisted Pull-Ups"
+        sets: 3
+        reps: "AMRAP"
+        tempo: "2010"
+      - name: "Chest Flys (Pec Deck/Cable)"
+        sets: 3
+        reps: "12-15"
+        tempo: "2011"
+      - name: "Preacher Curls"
+        sets: 3
+        reps: "12-15"
+        tempo: "2011"
+
+  Saturday:
+    focus: "Mobility & Conditioning"
+    intensity: "Moderate"
+    core: "Side Planks (3x45s/side)"
+    exercises:
+      - name: "Yoga / Mobility Flow"
+        sets: 1
+        reps: "30 mins"
+        tempo: "Flow"
+      - name: "Interval Sprints (Row/Bike)"
+        sets: 10
+        reps: "30s on / 30s off"
+        tempo: "Max Effort"
+
+  Sunday:
+    focus: "Rest & Meal Prep"
+    intensity: "Rest"
+    core: "—"
+    exercises: []
+
