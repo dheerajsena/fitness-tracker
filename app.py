@@ -312,7 +312,6 @@ st.markdown(
         <h1>{app_name}</h1>
         <div class="sub">{phase} • {today_day_name}, {today.strftime("%d %b %Y")}</div>
       </div>
-      <div class="pill">Classy Mode</div>
     </div>
     """,
     unsafe_allow_html=True
