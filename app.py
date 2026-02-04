@@ -189,7 +189,10 @@ button[kind="secondary"] {
 }
 .stTabs [aria-selected="true"] {
     background-color: #000;
-    color: #FFFFFF !important; /* Explicit White text on Black pill */
+}
+.stTabs [aria-selected="true"] p, 
+.stTabs [aria-selected="true"] span {
+    color: #FFFFFF !important; /* Force inner text to white */
 }
 
 </style>
