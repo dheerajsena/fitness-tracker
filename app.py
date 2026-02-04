@@ -36,27 +36,26 @@ CUSTOM_CSS = """
     --bg-color: #F2F2F7; /* iOS System Gray 6 */
     --card-bg: #FFFFFF;
     --text-primary: #000000;
-    --text-secondary: #8E8E93;
+    --text-secondary: #3A3A3C; /* Darker gray for better visibility */
     --accent: #007AFF; /* iOS Blue */
-    --accent-gradient: linear-gradient(135deg, #007AFF 0%, #0056b3 100%);
-    --success: #34C759;
-    --danger: #FF3B30;
-    --radius: 16px;
     --shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
-/* GLOBAL RESET */
+/* GLOBAL RESET & TEXT VISIBILITY FIX */
 .stApp {
     background-color: var(--bg-color);
     font-family: 'Inter', -apple-system, sans-serif;
 }
 
-h1, h2, h3 {
-    color: var(--text-primary);
-    font-weight: 800 !important;
-    letter-spacing: -0.02em;
+/* Force ALL standard text to be dark, overriding Dark Mode defaults */
+p, li, .stMarkdown, .stText, h1, h2, h3, h4, h5, h6, label, .stDataFrame {
+    color: var(--text-primary) !important;
 }
-h1 { font-size: 2.2rem !important; }
+.stCaption {
+    color: var(--text-secondary) !important;
+}
+
+h1 { font-size: 2.2rem !important; margin-bottom: 0.5rem !important;}
 h2 { font-size: 1.6rem !important; }
 h3 { font-size: 1.25rem !important; }
 
@@ -72,7 +71,7 @@ h3 { font-size: 1.25rem !important; }
     align-items: center;
     justify-content: space-between;
 }
-.brand h1 { margin: 0; font-size: 1.6rem !important; }
+.brand h1 { margin: 0; font-size: 1.6rem !important; color: #000 !important; }
 .brand .sub { color: var(--text-secondary); font-size: 0.9rem; font-weight: 500; margin-top: 4px; }
 .pill {
     background: #000; color: #fff;
@@ -87,7 +86,7 @@ h3 { font-size: 1.25rem !important; }
 /* CARDS */
 .card {
     background: var(--card-bg);
-    border-radius: var(--radius);
+    border-radius: 16px;
     padding: 24px;
     box-shadow: var(--shadow);
     border: none;
@@ -112,7 +111,7 @@ h3 { font-size: 1.25rem !important; }
 
 .metric-tile {
     background: var(--card-bg);
-    border-radius: var(--radius);
+    border-radius: 16px;
     padding: 20px;
     box-shadow: var(--shadow);
     display: flex; flex-direction: column;
@@ -158,20 +157,21 @@ h3 { font-size: 1.25rem !important; }
 }
 
 /* INPUTS (iOS Form Style) */
+/* Force input backgrounds to light gray and text to black */
+input, .stNumberInput input, .stTextInput input, .stSelectbox, .stDateInput {
+    color: #000000 !important;
+}
 div[data-baseweb="input"] > div, div[data-baseweb="select"] > div {
     background-color: #E5E5EA !important; /* iOS Input Gray */
     border: none !important;
     border-radius: 10px !important;
-}
-div[data-baseweb="input"] input {
     color: #000 !important;
-    font-weight: 500;
 }
-label {
-    color: var(--text-secondary) !important;
-    font-weight: 600 !important;
-    font-size: 0.9rem !important;
-    margin-bottom: 6px !important;
+/* Fix the +/- buttons on number inputs to look cleaner */
+button[kind="secondary"] {
+    background: transparent !important;
+    border: none !important;
+    color: #000 !important;
 }
 
 /* TABS (Segmented Control Look) */
@@ -194,18 +194,43 @@ label {
     background-color: #000;
     color: #fff !important;
 }
-
-/* EXTRAS */
-.footer-hint {
-    margin-top: 48px;
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    font-weight: 500;
-}
 </style>
 """
 st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
+
+# ... (Previous Helper/DB code remains unchanged) ...
+
+# ... (Previous Tabs/Home code remains unchanged) ...
+
+# -----------------------------
+# PROGRESS TAB (With Fixed Plotly Colors)
+# -----------------------------
+with tab_progress:
+    st.markdown('<div class="section-title">Analytics</div>', unsafe_allow_html=True)
+    conn = connect_db()
+    logs = fetch_logs(conn)
+    metrics = fetch_metrics(conn)
+    conn.close()
+    
+    if not logs.empty:
+        logs["log_date"] = pd.to_datetime(logs["log_date"]).dt.date
+        daily = logs[logs["skipped"]==0].groupby("log_date").size().reset_index(name="count")
+        
+        # FIXED PLOTLY CHART AESTHETICS
+        fig = px.bar(daily, x="log_date", y="count", title="Exercises Completed")
+        fig.update_layout(
+            font_family="Inter",
+            font_color="#000000",
+            title_font_size=20,
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)",
+            xaxis=dict(showgrid=False, color="#000000"),
+            yaxis=dict(showgrid=True, gridcolor="#E5E5EA", color="#000000")
+        )
+        fig.update_traces(marker_color="#007AFF") # iOS Blue
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.info("Log some workouts to see data.")
 
 # -----------------------------
 # Helpers
