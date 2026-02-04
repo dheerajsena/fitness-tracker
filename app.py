@@ -26,127 +26,182 @@ DAY_ORDER = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sund
 # Styling (Classy, Light, Subtle)
 # -----------------------------
 # -----------------------------
-# Styling (Mobile-First, High Contrast)
+# Styling (Apple Health 2026 - Premium Light)
 # -----------------------------
 CUSTOM_CSS = """
 <style>
-/* 1. FORCE LIGHT THEME BASICS */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 :root {
-    --primary-color: #2563eb;
-    --bg-color: #f9fafb;
-    --card-bg: #ffffff;
-    --text-color: #1f2937;
-    --text-muted: #6b7280;
-    --border-color: #e5e7eb;
+    --bg-color: #F2F2F7; /* iOS System Gray 6 */
+    --card-bg: #FFFFFF;
+    --text-primary: #000000;
+    --text-secondary: #8E8E93;
+    --accent: #007AFF; /* iOS Blue */
+    --accent-gradient: linear-gradient(135deg, #007AFF 0%, #0056b3 100%);
+    --success: #34C759;
+    --danger: #FF3B30;
+    --radius: 16px;
+    --shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
-/* Force entire app to light mode colors to prevent dark mode clashes */
+/* GLOBAL RESET */
 .stApp {
-  background-color: var(--bg-color);
-  color: var(--text-color);
+    background-color: var(--bg-color);
+    font-family: 'Inter', -apple-system, sans-serif;
 }
 
-/* 2. TYPOGRAPHY SCALING (Mobile Friendly) */
-html, body, [class*="css"] {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px; /* Base size larger for mobile */
+h1, h2, h3 {
+    color: var(--text-primary);
+    font-weight: 800 !important;
+    letter-spacing: -0.02em;
 }
+h1 { font-size: 2.2rem !important; }
+h2 { font-size: 1.6rem !important; }
+h3 { font-size: 1.25rem !important; }
 
-h1 { font-size: 1.75rem !important; font-weight: 700 !important; }
-h2 { font-size: 1.5rem !important; font-weight: 600 !important; }
-h3 { font-size: 1.25rem !important; font-weight: 600 !important; }
-p, div, label { font-size: 1rem !important; }
-
-/* 3. BUTTONS (Fixing Black-on-Black) */
-.stButton button {
-  width: 100%; /* Full width on mobile feels better */
-  background-color: #ffffff !important;
-  color: #111827 !important; /* Solid Black/Gray */
-  border: 1px solid #d1d5db !important;
-  border-radius: 12px !important;
-  padding: 12px 20px !important; /* Larger touch target */
-  font-size: 1rem !important;
-  font-weight: 600 !important;
-  margin-top: 10px;
-}
-.stButton button:hover, .stButton button:active {
-  background-color: #f3f4f6 !important;
-  border-color: #9ca3af !important;
-  color: #000000 !important;
-}
-/* Primary Action Button (Submit) - Optional: Make it blue? Keeping it clean/white for classy look, but high contrast */
-
-/* 4. CARDS & CONTAINERS */
-.block-container {
-  padding-top: 2rem !important;
-  padding-bottom: 5rem !important; /* Space for bottom nav feel */
-}
-
+/* NAVBAR / HEADER BRANDING */
 .brand {
-  background: var(--card-bg);
-  padding: 16px;
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-  margin-bottom: 24px;
+    background: var(--card-bg);
+    padding: 24px;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 24px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
-.card {
-  background: var(--card-bg);
-  padding: 20px;
-  border-radius: 16px; /* softer corners */
-  border: 1px solid var(--border-color);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); /* subtle lift */
-  margin-bottom: 16px;
+.brand h1 { margin: 0; font-size: 1.6rem !important; }
+.brand .sub { color: var(--text-secondary); font-size: 0.9rem; font-weight: 500; margin-top: 4px; }
+.pill {
+    background: #000; color: #fff;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
-/* 5. METRICS GRID (Mobile optimized) */
+/* CARDS */
+.card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    border: none;
+    margin-bottom: 16px;
+}
+.section-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 32px 0 16px 0;
+    color: var(--text-primary);
+}
+
+/* TILES (Apple Health Summary Style) */
 .metric-grid {
-  display: grid; 
-  grid-template-columns: repeat(2, 1fr); /* 2x2 on mobile is readable */
-  gap: 12px;
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 16px;
 }
 @media (min-width: 768px) {
     .metric-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
 .metric-tile {
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 16px;
-  display: flex; flex-direction: column; justify-content: center;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    display: flex; flex-direction: column;
+    transition: transform 0.2s;
 }
+.metric-tile:hover { transform: translateY(-2px); }
+
 .metric-tile .label {
-  font-size: 0.75rem !important; 
-  font-weight: 600; 
-  color: var(--text-muted); 
-  text-transform: uppercase;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #FF2D55; /* Health Pink/Red vibe */
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
 }
 .metric-tile .value {
-  font-size: 1.5rem !important; 
-  font-weight: 800; 
-  color: #111827;
-  margin: 4px 0;
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+}
+.metric-tile .hint {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-top: 4px;
 }
 
-/* 6. INPUTS (Larger text, better touch) */
-div[data-baseweb="input"] input {
-    font-size: 16px !important; /* Prevents iOS zoom on focus */
-    color: #111827 !important;
-    padding: 10px !important;
+/* BUTTONS (iOS Filled Style) */
+.stButton button {
+    background: #000000 !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 14px 24px !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
 }
-div[data-baseweb="select"] div {
-    font-size: 16px !important;
-    color: #111827 !important;
+.stButton button:hover {
+    background: #333333 !important;
+    transform: scale(1.01);
+}
+
+/* INPUTS (iOS Form Style) */
+div[data-baseweb="input"] > div, div[data-baseweb="select"] > div {
+    background-color: #E5E5EA !important; /* iOS Input Gray */
+    border: none !important;
+    border-radius: 10px !important;
+}
+div[data-baseweb="input"] input {
+    color: #000 !important;
+    font-weight: 500;
 }
 label {
-    color: #374151 !important;
-    font-weight: 500 !important;
+    color: var(--text-secondary) !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    margin-bottom: 6px !important;
 }
 
-/* 7. CUSTOM MESSAGE STYLING */
-.section-title {
-    font-size: 1.25rem; font-weight: 700; color: #111827;
-    margin: 32px 0 16px 0;
+/* TABS (Segmented Control Look) */
+.stTabs [data-baseweb="tab-list"] {
+    background-color: transparent;
+    border-bottom: none;
+    gap: 8px;
+    padding-bottom: 12px;
+}
+.stTabs [data-baseweb="tab"] {
+    background-color: var(--card-bg);
+    border-radius: 20px;
+    padding: 8px 16px;
+    border: 1px solid rgba(0,0,0,0.05);
+    font-weight: 600;
+    color: var(--text-secondary);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+}
+.stTabs [aria-selected="true"] {
+    background-color: #000;
+    color: #fff !important;
+}
+
+/* EXTRAS */
+.footer-hint {
+    margin-top: 48px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
 }
 </style>
 """
