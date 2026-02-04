@@ -25,131 +25,128 @@ DAY_ORDER = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sund
 # -----------------------------
 # Styling (Classy, Light, Subtle)
 # -----------------------------
+# -----------------------------
+# Styling (Mobile-First, High Contrast)
+# -----------------------------
 CUSTOM_CSS = """
 <style>
-/* Base App Styling */
+/* 1. FORCE LIGHT THEME BASICS */
+:root {
+    --primary-color: #2563eb;
+    --bg-color: #f9fafb;
+    --card-bg: #ffffff;
+    --text-color: #1f2937;
+    --text-muted: #6b7280;
+    --border-color: #e5e7eb;
+}
+
+/* Force entire app to light mode colors to prevent dark mode clashes */
 .stApp {
-  background-color: #f9fafb; /* Light Gray-50 */
-  color: #1f2937; /* Gray-800 */
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
-h1, h2, h3, h4, h5, h6 {
-  color: #111827; /* Gray-900 */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+/* 2. TYPOGRAPHY SCALING (Mobile Friendly) */
+html, body, [class*="css"] {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px; /* Base size larger for mobile */
 }
+
+h1 { font-size: 1.75rem !important; font-weight: 700 !important; }
+h2 { font-size: 1.5rem !important; font-weight: 600 !important; }
+h3 { font-size: 1.25rem !important; font-weight: 600 !important; }
+p, div, label { font-size: 1rem !important; }
+
+/* 3. BUTTONS (Fixing Black-on-Black) */
+.stButton button {
+  width: 100%; /* Full width on mobile feels better */
+  background-color: #ffffff !important;
+  color: #111827 !important; /* Solid Black/Gray */
+  border: 1px solid #d1d5db !important;
+  border-radius: 12px !important;
+  padding: 12px 20px !important; /* Larger touch target */
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  margin-top: 10px;
+}
+.stButton button:hover, .stButton button:active {
+  background-color: #f3f4f6 !important;
+  border-color: #9ca3af !important;
+  color: #000000 !important;
+}
+/* Primary Action Button (Submit) - Optional: Make it blue? Keeping it clean/white for classy look, but high contrast */
+
+/* 4. CARDS & CONTAINERS */
 .block-container {
-  padding-top: 1.5rem !important;
-  padding-bottom: 3rem !important;
-  max-width: 1200px;
+  padding-top: 2rem !important;
+  padding-bottom: 5rem !important; /* Space for bottom nav feel */
 }
 
-/* Brand/Header Card */
 .brand {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 20px 24px;
-  background: #ffffff;
+  background: var(--card-bg);
+  padding: 16px;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  border: 1px solid #e5e7eb;
-  margin-bottom: 2rem;
+  border: 1px solid var(--border-color);
+  margin-bottom: 24px;
 }
-.brand h1 {
-  font-size: 1.5rem; margin: 0; font-weight: 700; letter-spacing: -0.025em;
-}
-.brand .sub {
-  font-size: 0.875rem; color: #6b7280; margin-top: 4px;
-}
-.pill {
-  font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
-  padding: 6px 12px;
-  border-radius: 9999px;
-  background: #f3f4f6; color: #4b5563;
-  border: 1px solid #e5e7eb;
-}
-
-/* Cards */
 .card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  background: var(--card-bg);
   padding: 20px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  border-radius: 16px; /* softer corners */
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); /* subtle lift */
   margin-bottom: 16px;
 }
-.card h3 {
-  margin-top: 0; font-size: 1.1rem; font-weight: 600;
+
+/* 5. METRICS GRID (Mobile optimized) */
+.metric-grid {
+  display: grid; 
+  grid-template-columns: repeat(2, 1fr); /* 2x2 on mobile is readable */
+  gap: 12px;
 }
-.section-title {
-  font-size: 1.125rem; font-weight: 600; color: #374151;
-  margin: 24px 0 12px 0;
+@media (min-width: 768px) {
+    .metric-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
-/* Metrics - Custom HTML component style */
-.metric-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
-}
-@media (max-width: 768px) { .metric-grid { grid-template-columns: repeat(2, 1fr); } }
 .metric-tile {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 16px;
-  text-align: left;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  display: flex; flex-direction: column; justify-content: center;
 }
 .metric-tile .label {
-  font-size: 0.8rem; font-weight: 500; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;
+  font-size: 0.75rem !important; 
+  font-weight: 600; 
+  color: var(--text-muted); 
+  text-transform: uppercase;
 }
 .metric-tile .value {
-  font-size: 1.5rem; font-weight: 700; color: #111827; margin: 4px 0;
-}
-.metric-tile .hint {
-  font-size: 0.8rem; color: #9ca3af;
-}
-
-/* Streamlit Elements Overrides */
-/* Buttons */
-.stButton button {
-  background-color: #ffffff !important;
-  color: #374151 !important;
-  border: 1px solid #d1d5db !important;
-  border-radius: 8px !important;
-  font-weight: 500 !important;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
-  transition: all 0.2s;
-}
-.stButton button:hover {
-  border-color: #9ca3af !important;
-  background-color: #f9fafb !important;
-  color: #111827 !important;
-}
-.stButton button:active {
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05) !important;
-}
-/* Inputs */
-div[data-baseweb="input"] > div, div[data-baseweb="select"] > div {
-  background-color: #ffffff !important;
-  border-color: #d1d5db !important;
-  border-radius: 8px !important;
-  color: #111827 !important;
-}
-/* Tabs */
-.stTabs [data-baseweb="tab-list"] { 
-  border-bottom: 2px solid #e5e7eb; gap: 24px; 
-}
-.stTabs [data-baseweb="tab"] {
-  background: transparent !important;
-  border: none !important;
-  padding: 12px 4px !important;
-  font-weight: 500;
-  color: #6b7280;
-}
-.stTabs [aria-selected="true"] {
-  color: #2563eb !important; /* Classy Blue */
-  border-bottom: 2px solid #2563eb !important;
+  font-size: 1.5rem !important; 
+  font-weight: 800; 
+  color: #111827;
+  margin: 4px 0;
 }
 
-.footer-hint {
-  text-align: center; color: #9ca3af; font-size: 0.8rem; margin-top: 40px;
+/* 6. INPUTS (Larger text, better touch) */
+div[data-baseweb="input"] input {
+    font-size: 16px !important; /* Prevents iOS zoom on focus */
+    color: #111827 !important;
+    padding: 10px !important;
+}
+div[data-baseweb="select"] div {
+    font-size: 16px !important;
+    color: #111827 !important;
+}
+label {
+    color: #374151 !important;
+    font-weight: 500 !important;
+}
+
+/* 7. CUSTOM MESSAGE STYLING */
+.section-title {
+    font-size: 1.25rem; font-weight: 700; color: #111827;
+    margin: 32px 0 16px 0;
 }
 </style>
 """
