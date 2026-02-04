@@ -393,22 +393,64 @@ with tab_home:
 # -----------------------------
 # WORKOUT TAB
 # -----------------------------
+def fetch_last_log(conn, exercise_name):
+    # Fetch the most recent log for this specific exercise
+    q = """
+    SELECT log_date, actual_sets, actual_reps, weight, notes 
+    FROM workout_logs 
+    WHERE exercise_name = ? AND skipped = 0
+    ORDER BY log_date DESC 
+    LIMIT 1
+    """
+    try:
+        df = pd.read_sql_query(q, conn, params=[exercise_name])
+        return df.iloc[0] if not df.empty else None
+    except Exception:
+        return None
+
 with tab_workout:
+    # 1. Day Selection
+    day_options = DAY_ORDER
+    try:
+        default_index = day_options.index(today_day_name)
+    except ValueError:
+        default_index = 0
+        
+    selected_day = st.selectbox("Select Workout For:", day_options, index=default_index)
+    
+    # Load plan for Selected Day
     schedule = data.get("schedule", {})
-    day_plan = schedule.get(today_day_name, {})
+    day_plan = schedule.get(selected_day, {})
     exercises = day_plan.get("exercises", [])
     
-    st.markdown(f'<div class="section-title">Today: {today_day_name}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="section-title">Plan: {selected_day}</div>', unsafe_allow_html=True)
     st.info(f"**Focus:** {day_plan.get('focus','—')}  |  **Intensity:** {day_plan.get('intensity','—')}  |  **Core:** {day_plan.get('core','—')}")
 
+    conn = connect_db() # Open connection once for history lookups
+
     if not exercises:
-        st.write("No planned exercises.")
+        st.write("No planned exercises for this day.")
     else:
         with st.form("log_form"):
             log_entries = []
             for i, ex in enumerate(exercises):
-                st.markdown(f"**{i+1}. {ex.get('name')}**")
-                st.caption(f"{ex.get('sets')} x {ex.get('reps')} | Tempo: {ex.get('tempo','—')} | {ex.get('notes','')}")
+                ex_name = ex.get('name')
+                
+                # History Lookup
+                last_log = fetch_last_log(conn, ex_name)
+                history_str = "No history yet"
+                if last_log is not None:
+                    # Format: 2026-02-01: 3x10 @ 50.0kg (Note: ...)
+                    w_str = f"{last_log['weight']}kg" if last_log['weight'] > 0 else "BW"
+                    note_str = f" | 📝 {last_log['notes']}" if last_log['notes'] else ""
+                    history_str = f"⏮️ **Last ({last_log['log_date']}):** {last_log['actual_sets']} sets x {last_log['actual_reps']} reps @ **{w_str}**{note_str}"
+
+                st.markdown(f"### {i+1}. {ex_name}")
+                st.caption(f"Target: {ex.get('sets')} x {ex.get('reps')} | {ex.get('notes','')}")
+                
+                # Display History clearly
+                if last_log is not None:
+                    st.markdown(f'<div style="background-color: #E5E5EA; padding: 8px 12px; border-radius: 8px; margin-bottom: 8px; font-size: 0.85rem; color: #3A3A3C;">{history_str}</div>', unsafe_allow_html=True)
                 
                 cA, cB, cC, cD = st.columns([1,1,1,1])
                 with cA:
@@ -418,37 +460,44 @@ with tab_workout:
                 with cC:
                     w = st.number_input("Kg", 0.0, 500.0, 0.0, step=0.5, key=f"w{i}")
                 with cD:
+                    # Spacer to align checkbox
+                    st.write("")
+                    st.write("") 
                     sk = st.checkbox("Skip", key=f"sk{i}")
-                n = st.text_input("Note", key=f"n{i}", placeholder="How did it feel?")
+                n = st.text_input("Notes (e.g. '15kgx10, 12kgx8')", key=f"n{i}", placeholder="Set details or feelings...")
                 st.markdown("---")
                 
                 log_entries.append({
-                    "name": ex.get("name"), "pset": str(ex.get("sets")), "prep": str(ex.get("reps")),
+                    "name": ex_name, "pset": str(ex.get("sets")), "prep": str(ex.get("reps")),
                     "aset": s, "arep": r, "awt": w, "skip": sk, "note": n
                 })
             
-            # Extras
-            st.markdown("**Custom / Sport**")
-            cx_name = st.text_input("Custom Exercise Name")
-            c1, c2, c3 = st.columns(3)
-            with c1: cx_s = st.number_input("Sets", 0, 20, 0, key="cx_s")
-            with c2: cx_r = st.number_input("Reps", 0, 100, 0, key="cx_r")
-            with c3: cx_w = st.number_input("Weight", 0.0, 500.0, 0.0, key="cx_w")
+            # Additional Workouts (Expander for clean UI)
+            with st.expander("➕ Add Extra / Custom Exercise", expanded=False):
+                st.markdown("**Custom Additional Log**")
+                cx_name = st.text_input("Exercise Name", placeholder="e.g. Burpees")
+                c1, c2, c3 = st.columns(3)
+                with c1: cx_s = st.number_input("Sets", 0, 20, 0, key="cx_s")
+                with c2: cx_r = st.number_input("Reps", 0, 100, 0, key="cx_r")
+                with c3: cx_w = st.number_input("Weight", 0.0, 500.0, 0.0, key="cx_w")
+                cx_note = st.text_input("Custom Notes", key="cx_n")
             
-            sub = st.form_submit_button("Save Log")
+            sub = st.form_submit_button("Save Workout")
             
             if sub:
-                conn = connect_db()
                 cur = conn.cursor()
+                # 1. Save Planned
                 for e in log_entries:
                     cur.execute("INSERT INTO workout_logs (log_date, day_name, exercise_name, planned_sets, planned_reps, actual_sets, actual_reps, weight, skipped, notes) VALUES (?,?,?,?,?,?,?,?,?,?)",
-                               (today.isoformat(), today_day_name, e["name"], e["pset"], e["prep"], e["aset"], e["arep"], e["awt"], 1 if e["skip"] else 0, e["note"]))
+                               (today.isoformat(), selected_day, e["name"], e["pset"], e["prep"], e["aset"], e["arep"], e["awt"], 1 if e["skip"] else 0, e["note"]))
+                # 2. Save Custom if entered
                 if cx_name:
                     cur.execute("INSERT INTO custom_exercises (log_date, day_name, exercise_name, actual_sets, actual_reps, weight, notes) VALUES (?,?,?,?,?,?,?)",
-                                (today.isoformat(), today_day_name, cx_name, cx_s, cx_r, cx_w, ""))
+                                (today.isoformat(), selected_day, cx_name, cx_s, cx_r, cx_w, cx_note))
                 conn.commit()
-                conn.close()
-                st.success("Saved!")
+                st.success(f"Logged workout for {selected_day}!")
+                
+    conn.close()
 
 # -----------------------------
 # PLAN TAB
